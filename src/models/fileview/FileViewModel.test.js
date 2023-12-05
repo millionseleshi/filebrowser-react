@@ -157,3 +157,20 @@ it("should set user files when the action is setFiles", (done) => {
     done();
   });
 });
+
+it("should not open a node if it has children",(done)=>{
+  when(()=>{
+    const node = { id: '1', children: [{ id: '2' }] };
+    const fileOne = userFileStore.create(userfileOne);
+    const fileTwo = userFileStore.create(userfileTwo);
+    const fileView = FileViewModel.create({
+      userFiles: [fileOne, fileTwo],
+      activeFilesIds: activefilesids,
+      editorActiveFileId: editoractivefileid,
+    });
+    fileView.openFile(node)
+    const mockCallback = jest.fn(fileView.setActiveFiles(node.id));
+    expect(mockCallback.mock.calls).toHaveLength(0)
+  })
+  done()
+})

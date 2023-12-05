@@ -42,6 +42,8 @@ export const FileViewModel = types
       self.userFiles.push(cast(userfiles));
       self.activeFilesIds.clear();
     },
+  }))
+  .actions((self) => ({
     openFile: (node: SnapshotOrInstance<typeof TreeViewModel>) => {
       const { id, children } = node;
       if (children) {
@@ -49,7 +51,8 @@ export const FileViewModel = types
       }
 
       if (!self.activeFilesIds.includes(id)) {
+        self.setActiveFiles(node.id);
       }
+      self.setEditorActiveFile(node.id);
     },
   }));
-
