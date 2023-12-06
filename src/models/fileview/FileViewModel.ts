@@ -1,11 +1,12 @@
+import { uuid } from "uuidv4";
 import { TreeViewModel } from "../treeview/TreeViewModel";
 import { userFileStore } from "./../userfile/UserFileModel";
-import { SnapshotOrInstance, cast, types } from "mobx-state-tree";
+import { SnapshotOrInstance, cast, getSnapshot, types } from "mobx-state-tree";
 
 export const FileViewModel = types
   .model("fileViewModel", {
     userFiles: types.array(userFileStore),
-    activeFilesIds: types.optional(types.array(types.string), []),
+    activeFilesIds: types.array(types.string),
     editorActiveFileId: types.maybeNull(types.string),
   })
   .actions((self) => ({
@@ -31,13 +32,7 @@ export const FileViewModel = types
       }
       return updateFileCode;
     },
-    selectActiveFiles: (activeFileId: string) => {
-      if (
-        self.activeFilesIds.find((activefile) => activefile === activeFileId)
-      ) {
-        return self.userFiles.filter((fileid) => fileid.id === activeFileId);
-      }
-    },
+
     setFiles: (userfiles: SnapshotOrInstance<typeof userFileStore>) => {
       self.userFiles.push(cast(userfiles));
       self.activeFilesIds.clear();
@@ -50,9 +45,49 @@ export const FileViewModel = types
         return;
       }
 
-      if (!self.activeFilesIds.includes(id)) {
-        self.setActiveFiles(node.id);
+      const { activeFilesIds } = getSnapshot(self);
+      if (activeFilesIds.includes(id)) {
+        self.setActiveFiles(id);
       }
-      self.setEditorActiveFile(node.id);
+      self.setEditorActiveFile(id);
+    },
+    closeFile: (fileToCloseId: string) => {
+      const activeFileLength = self.activeFilesIds.length;
+      if (activeFileLength === 1) {
+        self.setEditorActiveFile(null);
+      } else if (
+        activeFileLength >= 2 &&
+        fileToCloseId === self.editorActiveFileId
+      ) {
+        const newActiveFile = getNewActiveFileId(
+          self.activeFilesIds,
+          activeFileLength,
+          fileToCloseId
+        );
+        self.setEditorActiveFile(newActiveFile);
+      }
+    },
+  }))
+  .actions((self) => ({
+    selectActiveFiles: (activeFileId: string) => {
+      if (
+        self.activeFilesIds.find((activefile) => activefile === activeFileId)
+      ) {
+        return self.userFiles.filter((fileid) => fileid.id === activeFileId);
+      }
     },
   }));
+
+const getNewActiveFileId = (
+  activeFilesIds: string[],
+  activeFilesLength: number,
+  fileToCloseId: string
+) => {
+  const fileToBeRemovedIndex = activeFilesIds.indexOf(fileToCloseId);
+
+  if (fileToBeRemovedIndex + 1 === activeFilesLength) {
+    return activeFilesIds[fileToBeRemovedIndex - 1];
+  }
+
+  return activeFilesIds[fileToBeRemovedIndex + 1];
+};
