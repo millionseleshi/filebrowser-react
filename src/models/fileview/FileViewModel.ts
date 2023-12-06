@@ -1,5 +1,4 @@
-import { uuid } from "uuidv4";
-import { TreeViewModel } from "../treeview/TreeViewModel";
+import { TreeViewModel } from "./../treeview/TreeViewModel";
 import { userFileStore } from "./../userfile/UserFileModel";
 import { SnapshotOrInstance, cast, getSnapshot, types } from "mobx-state-tree";
 
