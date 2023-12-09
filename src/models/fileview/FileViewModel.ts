@@ -1,10 +1,11 @@
 import { TreeViewModel } from "./../treeview/TreeViewModel";
-import { userFileStore } from "./../userfile/UserFileModel";
+import { UserFile, UserFileStore } from "./../userfile/UserFileModel";
 import { SnapshotOrInstance, cast, getSnapshot, types } from "mobx-state-tree";
+import { v4 as uuid } from "uuid";
 
 export const FileViewModel = types
   .model("fileViewModel", {
-    userFiles: types.array(userFileStore),
+    userFiles: UserFileStore,
     activeFilesIds: types.array(types.string),
     editorActiveFileId: types.maybeNull(types.string),
   })
@@ -23,7 +24,7 @@ export const FileViewModel = types
       self.editorActiveFileId = editorFileId;
     },
     updateFileCode: (activeFileId: string, newCode: string) => {
-      let updateFileCode = self.userFiles.find(
+      let updateFileCode = self.userFiles.userfile.find(
         (fileid) => fileid.id === activeFileId
       );
       if (updateFileCode) {
@@ -32,8 +33,8 @@ export const FileViewModel = types
       return updateFileCode;
     },
 
-    setFiles: (userfiles: SnapshotOrInstance<typeof userFileStore>) => {
-      self.userFiles.push(cast(userfiles));
+    setFiles: (userfiles: SnapshotOrInstance<typeof UserFile>) => {
+      self.userFiles.userfile.push(userfiles);
       self.activeFilesIds.clear();
     },
   }))
@@ -72,8 +73,20 @@ export const FileViewModel = types
       if (
         self.activeFilesIds.find((activefile) => activefile === activeFileId)
       ) {
-        return self.userFiles.filter((fileid) => fileid.id === activeFileId);
+        return self.userFiles.userfile.filter(
+          (fileid) => fileid.id === activeFileId
+        );
       }
+    },
+  }))
+  .actions((self) => ({
+    setTreeView: () => {
+      let result = TreeViewModel.create({
+        id: uuid(),
+        name: "root",
+        children: [],
+      });
+      return result;
     },
   }));
 
