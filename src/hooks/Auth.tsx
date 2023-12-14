@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: any) => {
         setSession(session);
         setUser(session?.user);
         setLoading(false);
-        navigate("/");
       }
     );
 

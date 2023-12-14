@@ -6,7 +6,8 @@ import ProtectedRoute from "./component/Auth/ProtectedRoute";
 import WelcomePage from "./pages/WelcomePage";
 import Login from "./component/Auth/Login";
 import EditorPage from "./pages/EditorPage";
-
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+import 'primeicons/primeicons.css';
 function App() {
   return (
     <BrowserRouter>

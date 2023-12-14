@@ -2,6 +2,8 @@ import { cast, getSnapshot, types } from "mobx-state-tree";
 import { TreeViewModel } from "./TreeViewModel";
 import { when } from "mobx";
 import { v4 as uuidv4 } from "uuid";
+import { SnapshotOrInstance } from "mobx-state-tree";
+import { v4 as uuid } from "uuid";
 
 it("should create tree view model", (done) => {
   when(() => {

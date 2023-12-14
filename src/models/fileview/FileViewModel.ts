@@ -1,7 +1,6 @@
 import { TreeViewModel } from "./../treeview/TreeViewModel";
 import { UserFile, UserFileStore } from "./../userfile/UserFileModel";
 import { SnapshotOrInstance, cast, getSnapshot, types } from "mobx-state-tree";
-import { v4 as uuid } from "uuid";
 
 export const FileViewModel = types
   .model("fileViewModel", {
@@ -34,7 +33,7 @@ export const FileViewModel = types
     },
 
     setFiles: (userfiles: SnapshotOrInstance<typeof UserFile>) => {
-      self.userFiles.userfile.push(userfiles);
+      self.userFiles.addUserFile(userfiles);
       self.activeFilesIds.clear();
     },
   }))
@@ -79,16 +78,6 @@ export const FileViewModel = types
       }
     },
   }))
-  .actions((self) => ({
-    setTreeView: () => {
-      let result = TreeViewModel.create({
-        id: uuid(),
-        name: "root",
-        children: [],
-      });
-      return result;
-    },
-  }));
 
 const getNewActiveFileId = (
   activeFilesIds: string[],
