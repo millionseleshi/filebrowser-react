@@ -59,7 +59,7 @@ const TreeView = () => {
     <>
       <ContextMenu model={TreeContextMenu} ref={cm} />
 
-      <div className="card flex justify-content-center">
+      <div className="card flex justify-content-center bg-white">
         <Tree
           value={node}
           expandedKeys={expandedKeys}
