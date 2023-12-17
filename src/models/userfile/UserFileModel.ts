@@ -10,7 +10,7 @@ export const UserFile = types.model("UserFile", {
 
 export const UserFileStore = types
   .model("UserFileStore", {
-    userfile: types.array(UserFile),
+    userfile: types.optional(types.array(UserFile),[]),
   })
   .actions((self) => ({
     addUserFile: (file: SnapshotOrInstance<typeof UserFile>) => {

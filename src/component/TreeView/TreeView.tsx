@@ -1,15 +1,13 @@
-import {
-  Tree,
-  TreeExpandedKeysType,
-} from "primereact/tree";
+import { Tree, TreeExpandedKeysType } from "primereact/tree";
 import { useRef, useState } from "react";
 import { ContextMenu } from "primereact/contextmenu";
 import { MenuItem } from "primereact/menuitem";
 import { TreeNode } from "primereact/treenode";
 import { v4 as uuidv4 } from "uuid";
 import TreeViewInplace from "./TreeViewInplace";
+import { observer } from "mobx-react-lite";
 
-const TreeView = () => {
+const TreeView = observer(() => {
   const [expandedKeys, setExpandedKeys] = useState<TreeExpandedKeysType>({});
   const [selectedNodeKey, setSelectedNodeKey] = useState<string | null>(null);
   const [node, setNode] = useState<TreeNode[]>([
@@ -34,7 +32,7 @@ const TreeView = () => {
             ...(_selectedNode.children || []),
             {
               key: uuidv4(),
-              label: <TreeViewInplace />,
+              label: <TreeViewInplace selectedNodeKey={selectedNodeKey} />,
               data: "file",
               icon: "pi pi-fw pi-file",
             },
@@ -72,6 +70,6 @@ const TreeView = () => {
       </div>
     </>
   );
-};
+})
 
 export default TreeView;
