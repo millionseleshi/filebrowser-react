@@ -67,7 +67,7 @@ const createNewFolderNode = (
   return (
     <div className="col-span-4">
       <Inplace closable>
-        <InplaceDisplay>{text || "newfolder"}</InplaceDisplay>
+        <InplaceDisplay>{text || "New folder"}</InplaceDisplay>
         <InplaceContent>
           <InputText
             onChange={(e) => setFolderName(e.target.value)}
@@ -89,7 +89,7 @@ const createNewFileNode = (
   return (
     <div className="col-span-4">
       <Inplace closable>
-        <InplaceDisplay>{text ?? "FileName"}</InplaceDisplay>
+        <InplaceDisplay>{text || "new file"}</InplaceDisplay>
         <InplaceContent>
           <InputText
             onChange={(e) => setFileName(e.target.value)}

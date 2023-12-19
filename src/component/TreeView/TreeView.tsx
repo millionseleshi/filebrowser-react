@@ -14,9 +14,9 @@ const TreeView = observer(() => {
     {
       key: "0",
       label: "root",
-      data: "Documents Folder",
+      data: "folder",
       icon: "pi pi-fw pi-folder",
-      children: []
+      children: [],
     },
   ]);
   const contextMenu = useRef<ContextMenu>(null);
@@ -26,14 +26,17 @@ const TreeView = observer(() => {
       label: "New File",
       icon: "pi pi-fw pi-file",
       command: () => {
-        addFileCommand(selectedNodeKey, node, setNode);
+        addFileCommand(selectedNodeKey!, node, setNode);
       },
     },
     {
       label: "New Folder",
       icon: "pi pi-fw pi-folder",
       command: () => {
-        addFolderCommand(selectedNodeKey, node, setNode);
+        node.forEach((n: any) => {
+          addSubFolder(n, selectedNodeKey!);
+        });
+        setNode([...node]);
       },
     },
     {
@@ -61,59 +64,57 @@ const TreeView = observer(() => {
     </>
   );
 });
-const addFolderCommand = (
-  selectedNodeKey: string | null,
-  node: TreeNode[],
-  setNode: {
-    (value: SetStateAction<TreeNode[]>): void;
-    (arg0: TreeNode[]): void;
+
+const addSubFolder = (node: any, selectedNodeKey: string) => {
+  if (node.key === selectedNodeKey && node.data === "folder") {
+    node.children?.push({
+      data: "folder",
+      key: uuidv4(),
+      label: (
+        <TreeViewInplace selectedNodeKey={selectedNodeKey} type="folder" />
+      ),
+      icon: "pi pi-fw pi-folder",
+      children: [],
+    });
+    return;
   }
-) => {
-  console.log("Selcted Node: " + selectedNodeKey);
-  let _node = [...node];
-  let _selectedNode = _node.find((node) => node.key === selectedNodeKey);
-  if (_selectedNode) {
-    _selectedNode.children = [
-      ...(_selectedNode.children || []),
-      {
-        key: uuidv4(),
-        label: (
-          <TreeViewInplace selectedNodeKey={selectedNodeKey} type="folder" />
-        ),
-        data: "folder",
-        icon: "pi pi-fw pi-folder",
-        children: [],
-      },
-    ];
-    setNode(_node)
-  }
+  node.children?.forEach((child: any) => {
+    addSubFolder(child, selectedNodeKey);
+  });
 };
 
 const addFileCommand = (
-  selectedNodeKey: string | null,
-  node: TreeNode[],
+  selectedNodeKey: string,
+  nodes: TreeNode[],
   setNode: {
     (value: SetStateAction<TreeNode[]>): void;
     (arg0: TreeNode[]): void;
   }
 ) => {
-  console.log("Selcted Node: " + selectedNodeKey);
-  let _node = [...node];
-  let _selectedNode = _node.find((node) => node.key === selectedNodeKey);
+  const traverse = (nodes: any) => {
+    for (let node of nodes) {
+      if (node.key === selectedNodeKey) {
+        if (node.data === "folder") {
+          node.children.push({
+            key: uuidv4(),
+            label: (
+              <TreeViewInplace selectedNodeKey={selectedNodeKey} type="file" />
+            ),
+            data: "file",
+            icon: "pi pi-fw pi-file",
+          });
+        } else {
+          console.log("Files can only be created under folders.");
+        }
+        return;
+      }
 
-  if (_selectedNode) {
-    _selectedNode.children = [
-      ...(_selectedNode.children || []),
-      {
-        key: uuidv4(),
-        label: (
-          <TreeViewInplace selectedNodeKey={selectedNodeKey} type="file" />
-        ),
-        data: "file",
-        icon: "pi pi-fw pi-file",
-      },
-    ];
-    setNode(_node);
-  }
+      if (node.children) {
+        traverse(node.children);
+      }
+    }
+  };
+  traverse(nodes);
+  setNode([...nodes]);
 };
 export default TreeView;
