@@ -8,6 +8,7 @@ const userfiles = [
     relativePath: "src/index1.js",
     code: 'console.log("Hello world!")',
     extension: "js",
+    type: "file",
   },
   {
     id: "2",
@@ -15,6 +16,7 @@ const userfiles = [
     relativePath: "src/index2.js",
     code: 'console.log("Hello world!")',
     extension: "js",
+    type: "file",
   },
 ];
 const activefilesids = ["1", "2"];
@@ -103,6 +105,7 @@ describe("file viewer operations", () => {
         relativePath: "src/component.js",
         code: 'console.log("hello world")',
         extension: ".js",
+        type: "file",
       };
 
       fileView.setFiles(userFiles);

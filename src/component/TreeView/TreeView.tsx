@@ -1,5 +1,5 @@
 import { Tree, TreeExpandedKeysType } from "primereact/tree";
-import { useRef, useState } from "react";
+import { SetStateAction, useRef, useState } from "react";
 import { ContextMenu } from "primereact/contextmenu";
 import { MenuItem } from "primereact/menuitem";
 import { TreeNode } from "primereact/treenode";
@@ -16,35 +16,25 @@ const TreeView = observer(() => {
       label: "root",
       data: "Documents Folder",
       icon: "pi pi-fw pi-folder",
+      children: []
     },
   ]);
-  const cm = useRef<ContextMenu>(null);
+  const contextMenu = useRef<ContextMenu>(null);
+
   const TreeContextMenu: MenuItem[] = [
     {
       label: "New File",
       icon: "pi pi-fw pi-file",
       command: () => {
-        console.log("Selcted Node: " + selectedNodeKey);
-        let _node = [...node];
-        let _selectedNode = _node.find((node) => node.key === selectedNodeKey);
-        if (_selectedNode) {
-          _selectedNode.children = [
-            ...(_selectedNode.children || []),
-            {
-              key: uuidv4(),
-              label: <TreeViewInplace selectedNodeKey={selectedNodeKey} />,
-              data: "file",
-              icon: "pi pi-fw pi-file",
-            },
-          ];
-          setNode(_node);
-        }
+        addFileCommand(selectedNodeKey, node, setNode);
       },
     },
     {
       label: "New Folder",
       icon: "pi pi-fw pi-folder",
-      command: () => {},
+      command: () => {
+        addFolderCommand(selectedNodeKey, node, setNode);
+      },
     },
     {
       label: "Delete",
@@ -55,7 +45,7 @@ const TreeView = observer(() => {
 
   return (
     <>
-      <ContextMenu model={TreeContextMenu} ref={cm} />
+      <ContextMenu model={TreeContextMenu} ref={contextMenu} />
 
       <div className="card flex justify-content-center bg-white">
         <Tree
@@ -64,12 +54,66 @@ const TreeView = observer(() => {
           onToggle={(e) => setExpandedKeys(e.value)}
           contextMenuSelectionKey={selectedNodeKey}
           onContextMenuSelectionChange={(e) => setSelectedNodeKey(e.value)}
-          onContextMenu={(e) => cm.current.show(e.originalEvent)}
+          onContextMenu={(e) => contextMenu.current.show(e.originalEvent)}
           className="w-full md:w-40rem"
         />
       </div>
     </>
   );
-})
+});
+const addFolderCommand = (
+  selectedNodeKey: string | null,
+  node: TreeNode[],
+  setNode: {
+    (value: SetStateAction<TreeNode[]>): void;
+    (arg0: TreeNode[]): void;
+  }
+) => {
+  console.log("Selcted Node: " + selectedNodeKey);
+  let _node = [...node];
+  let _selectedNode = _node.find((node) => node.key === selectedNodeKey);
+  if (_selectedNode) {
+    _selectedNode.children = [
+      ...(_selectedNode.children || []),
+      {
+        key: uuidv4(),
+        label: (
+          <TreeViewInplace selectedNodeKey={selectedNodeKey} type="folder" />
+        ),
+        data: "folder",
+        icon: "pi pi-fw pi-folder",
+        children: [],
+      },
+    ];
+    setNode(_node)
+  }
+};
 
+const addFileCommand = (
+  selectedNodeKey: string | null,
+  node: TreeNode[],
+  setNode: {
+    (value: SetStateAction<TreeNode[]>): void;
+    (arg0: TreeNode[]): void;
+  }
+) => {
+  console.log("Selcted Node: " + selectedNodeKey);
+  let _node = [...node];
+  let _selectedNode = _node.find((node) => node.key === selectedNodeKey);
+
+  if (_selectedNode) {
+    _selectedNode.children = [
+      ...(_selectedNode.children || []),
+      {
+        key: uuidv4(),
+        label: (
+          <TreeViewInplace selectedNodeKey={selectedNodeKey} type="file" />
+        ),
+        data: "file",
+        icon: "pi pi-fw pi-file",
+      },
+    ];
+    setNode(_node);
+  }
+};
 export default TreeView;

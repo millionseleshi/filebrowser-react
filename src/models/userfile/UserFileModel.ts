@@ -6,6 +6,7 @@ export const UserFile = types.model("UserFile", {
   relativePath: types.maybeNull(types.string),
   code: types.maybeNull(types.string),
   extension: types.maybeNull(types.string),
+  type: types.enumeration(["file", "folder"]),
 });
 
 export const UserFileStore = types

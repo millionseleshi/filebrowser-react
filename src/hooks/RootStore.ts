@@ -1,5 +1,5 @@
 import { Instance, onSnapshot, types } from "mobx-state-tree";
-import { UserFile, UserFileStore } from "../models/userfile/UserFileModel";
+import { UserFileStore } from "../models/userfile/UserFileModel";
 import { createContext, useContext } from "react";
 
 const RootModel = types.model({
